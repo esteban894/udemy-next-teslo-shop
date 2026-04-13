@@ -1,11 +1,15 @@
+export const revalidate = 604800; // 7 días
+
+import { getProductBySlug } from "@/actions";
 import {
   ProductMobileSlideshow,
   ProductSlideshow,
   QuantitySelector,
   SizeSelector,
+  StockLabel,
 } from "@/components";
 import { titleFont } from "@/config/fonts";
-import { initialData } from "@/seed/seed";
+import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -14,9 +18,29 @@ interface Props {
   }>;
 }
 
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const { slug } = await params;
+
+  const product = await getProductBySlug(slug);
+
+  return {
+    title: product?.title ?? "Producto no encontrado",
+    description: product?.description ?? "",
+    openGraph: {
+      title: product?.title ?? "Producto no encontrado",
+      description: product?.description ?? "",
+      // images: [], // https://tesloshop.com/products/product/image.png
+      images: [`/products/${product?.images[1]}`],
+    },
+  };
+}
+
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = initialData.products.find((product) => product.slug === slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
@@ -40,7 +64,8 @@ export default async function ProductPage({ params }: Props) {
 
       {/* Detalles */}
       <div className="col-span-1 px-5">
-        <h1 className={`${titleFont.className} antialiased text-bold text-xl`}>{product.title}</h1>
+        <StockLabel slug={product.slug} />
+        <h1 className={`${titleFont.className} antialiased font-bold text-xl`}>{product.title}</h1>
         <p className="text-lg mb-5">{product.price}</p>
 
         {/* Selector de Tallas */}
