@@ -1,16 +1,12 @@
 export const revalidate = 604800; // 7 días
 
 import { getProductBySlug } from "@/actions";
-import {
-  ProductMobileSlideshow,
-  ProductSlideshow,
-  QuantitySelector,
-  SizeSelector,
-  StockLabel,
-} from "@/components";
+import { ProductMobileSlideshow, ProductSlideshow, StockLabel } from "@/components";
 import { titleFont } from "@/config/fonts";
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { AddToCart } from "./ui/AddToCart";
+import { currencyFormat } from "@/utils";
 
 interface Props {
   params: Promise<{
@@ -18,10 +14,7 @@ interface Props {
   }>;
 }
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   const product = await getProductBySlug(slug);
@@ -66,16 +59,9 @@ export default async function ProductPage({ params }: Props) {
       <div className="col-span-1 px-5">
         <StockLabel slug={product.slug} />
         <h1 className={`${titleFont.className} antialiased font-bold text-xl`}>{product.title}</h1>
-        <p className="text-lg mb-5">{product.price}</p>
+        <p className="text-lg mb-5">{currencyFormat(product.price)}</p>
 
-        {/* Selector de Tallas */}
-        <SizeSelector selectedSize={product.sizes[0]} availableSizes={product.sizes} />
-
-        {/* Selector de Cantidad */}
-        <QuantitySelector quantity={2} />
-
-        {/* Button */}
-        <button className="btn-primary my-5">Agregar al carrito</button>
+        <AddToCart product={product} />
 
         {/* Descripción */}
         <h3 className="font-bold text-sm">Descripción</h3>
