@@ -12,12 +12,19 @@ const prisma = new PrismaClient({
 
 export async function main() {
   // 1. Borrar registros previos
+  await prisma.user.deleteMany();
+
   await prisma.productImage.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
 
+  const { categories, products, users } = initialData;
+
+  await prisma.user.createMany({
+    data: users,
+  });
+
   // Categories
-  const { categories, products } = initialData;
   const categoriesData = categories.map((category) => ({ name: category }));
 
   await prisma.category.createMany({
