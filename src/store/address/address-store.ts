@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 interface State {
   address: Address;
   setAddress: (address: Address) => void;
+  deleteAddress: () => void;
 }
 
 export const useAddressStore = create<State>()(
@@ -22,6 +23,19 @@ export const useAddressStore = create<State>()(
       },
 
       setAddress: (address) => set({ address }),
+      deleteAddress: () =>
+        set({
+          address: {
+            firstName: "",
+            lastName: "",
+            address: "",
+            address2: "",
+            postalCode: "",
+            city: "",
+            country: "",
+            phone: "",
+          },
+        }),
     }),
     {
       name: "address-storage",
