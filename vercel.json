@@ -1,0 +1,4 @@
+{
+  "installCommand": "dnf install -y libatomic && npm ci",
+  "buildCommand": "npm run build"
+}
