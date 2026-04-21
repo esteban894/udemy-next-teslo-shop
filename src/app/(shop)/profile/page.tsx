@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
-import { Title } from "@/components";
+import { ProfileUserInfo, Title } from "@/components";
+import type { ProfileUserFields } from "@/interfaces";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
@@ -8,12 +9,13 @@ export default async function ProfilePage() {
   if (!session?.user) {
     redirect("/");
   }
+
+  const user = session.user as ProfileUserFields;
+
   return (
     <div>
       <Title title="Perfil" />
-      <pre className="bg-gray-100 p-5 rounded-lg">{JSON.stringify(session.user, null, 2)}</pre>
-
-      <h3 className="text-3xl mb-10">{session.user.role}</h3>
+      <ProfileUserInfo user={user} />
     </div>
   );
 }
